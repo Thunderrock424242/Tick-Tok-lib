@@ -3,7 +3,8 @@ package com.thunder.ticktoklib.client;
 import com.thunder.ticktoklib.TickTokConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.PauseScreen;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -19,36 +20,45 @@ import static com.thunder.ticktoklib.Core.ModConstants.MOD_ID;
         * Renders game time and local time on the screen using the HUD.
         */
 @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
-public class TickTokPauseMenuRenderer {
+public class TickTokClockRenderer {
 
     private static final DateTimeFormatter LOCAL_TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     @SubscribeEvent
-    public static void onPauseScreenRender(RenderGuiEvent.Post event) {
+    public static void onRender(RenderGuiEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
-        if (!(mc.screen instanceof PauseScreen)) return;
+
+        if (mc.player == null || mc.level == null) return;
+
+        ItemStack mainHand = mc.player.getMainHandItem();
+        ItemStack offHand = mc.player.getOffhandItem();
+
+        // Only show if holding a clock
+        if (!mainHand.is(Items.CLOCK) && !offHand.is(Items.CLOCK)) return;
 
         GuiGraphics graphics = event.getGuiGraphics();
+        var font = mc.font;
+
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
+        int x = 10;
+        int y = 10;
 
-        int y = screenHeight / 2 + 100; // adjust for spacing
+        graphics.pose().pushPose();
+        graphics.pose().translate(0, 0, 1000); // Ensure it's drawn above everything
 
         if (TickTokConfig.SHOW_GAME_TIME.get()) {
             String gameTime = formatMinecraftTime(mc.level.getDayTime());
-            drawText(graphics, "Game Time: " + gameTime, 10, y, 0xFFFFFF);
+            graphics.drawString(font, "Game Time: " + gameTime, x, y, 0xFFFFFF, true);
             y += 12;
         }
 
         if (TickTokConfig.SHOW_LOCAL_TIME.get()) {
             String localTime = LocalTime.now().format(LOCAL_TIME_FORMAT);
-            drawText(graphics, "Local Time: " + localTime, 10, y, 0xAAAAFF);
+            graphics.drawString(font, "Local Time: " + localTime, x, y, 0xAAAAFF, true);
         }
-    }
 
-    private static void drawText(GuiGraphics graphics, String text, int x, int y, int color) {
-        var font = Minecraft.getInstance().font;
-        graphics.drawString(font, text, x, y, color, false);
+        graphics.pose().popPose();
     }
 
     private static String formatMinecraftTime(long dayTime) {
