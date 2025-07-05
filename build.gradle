@@ -14,7 +14,7 @@ tasks.named('wrapper', Wrapper).configure {
     distributionType = Wrapper.DistributionType.BIN
 }
 
-version = "1.0.0"
+version = "1.1.0"
 group = mod_group_id
 
 repositories {
@@ -147,7 +147,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_id                 : "ticktoklib",
             mod_name               : "Tick Tok lib",
             mod_license            : "APR",
-            mod_version            : "1.0.0",
+            mod_version            : "1.1.0",
             mod_authors            : "thunderrock424242",
             mod_description        : "this lib converts ticks into seconds minuts and hours so you can develop your mod easier. it also comes with 2 features displays the ingame time and your system time."
     ]
