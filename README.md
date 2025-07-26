@@ -38,3 +38,30 @@ SubTickScheduler.scheduleHalfTick(() -> {
 
 Remember that scheduled tasks run on a separate thread; interact with the game
 only from the main thread.
+
+To execute sub-tick tasks back on the server thread, you can pass a
+`MinecraftServer` instance:
+
+```java
+SubTickScheduler.scheduleOnServer(0.5, server, () -> {
+    // runs about half a tick later on the main thread
+});
+```
+
+Fast Water Flow Example
+----------------------
+Override the `getTickDelay` method in `WaterFluid` so flowing water updates
+every tick. This pairs well with scheduling partial updates using
+`SubTickScheduler`:
+
+```java
+@Mixin(WaterFluid.class)
+public abstract class WaterFluidMixin {
+    @Inject(method = "getTickDelay", at = @At("HEAD"), cancellable = true)
+    private void fastTicks(LevelReader level, CallbackInfoReturnable<Integer> cir) {
+        if (level instanceof Level world && !world.isClientSide()) {
+            cir.setReturnValue(1);
+        }
+    }
+}
+```
