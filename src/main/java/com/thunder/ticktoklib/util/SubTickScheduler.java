@@ -1,6 +1,7 @@
 package com.thunder.ticktoklib.util;
 
 import com.thunder.ticktoklib.TickTokHelper;
+import net.minecraft.server.MinecraftServer;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -51,6 +52,28 @@ public class SubTickScheduler {
     /** Schedule a task to run after a quarter tick (~12.5ms). */
     public static void scheduleQuarterTick(Runnable task) {
         EXECUTOR.schedule(task, SUBTICK_MS, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Schedule a task to run on the server thread after the specified delay.
+     *
+     * @param tickDelay delay in ticks (may be fractional)
+     * @param server    MinecraftServer instance
+     * @param task      runnable to execute on the server thread
+     */
+    public static void scheduleOnServer(double tickDelay, MinecraftServer server, Runnable task) {
+        long delayMs = (long) Math.floor(tickDelay * TickTokHelper.MS_PER_TICK);
+        EXECUTOR.schedule(() -> server.execute(task), delayMs, TimeUnit.MILLISECONDS);
+    }
+
+    /** Schedule a half tick task on the server thread. */
+    public static void scheduleHalfTickOnServer(MinecraftServer server, Runnable task) {
+        EXECUTOR.schedule(() -> server.execute(task), TickTokHelper.MS_PER_TICK / 2, TimeUnit.MILLISECONDS);
+    }
+
+    /** Schedule a quarter tick task on the server thread. */
+    public static void scheduleQuarterTickOnServer(MinecraftServer server, Runnable task) {
+        EXECUTOR.schedule(() -> server.execute(task), SUBTICK_MS, TimeUnit.MILLISECONDS);
     }
 
     /**
