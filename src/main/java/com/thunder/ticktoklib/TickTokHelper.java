@@ -34,10 +34,30 @@ public class TickTokHelper {
         return ticks / (float) TICKS_PER_HOUR;
     }
 
+    /**
+     * Converts the given time to total ticks.
+     *
+     * @param hours   number of hours
+     * @param minutes number of minutes
+     * @param seconds number of seconds
+     * @return ticks
+     */
     public static int duration(int hours, int minutes, int seconds) {
         return (hours * TICKS_PER_HOUR) + (minutes * TICKS_PER_MINUTE) + (seconds * TICKS_PER_SECOND);
     }
 
+    /**
+     * Creates a fluent time builder for constructing durations.
+     *
+     * @return TickTokTimeBuilder
+     */
+    public static TickTokTimeBuilder time() {
+        return new TickTokTimeBuilder();
+    }
+
+    /**
+     * Formats ticks into MM:SS format.
+     */
     public static String formatTicksToMinSec(int ticks) {
         int totalSeconds = ticks / TICKS_PER_SECOND;
         int minutes = totalSeconds / 60;
@@ -45,6 +65,9 @@ public class TickTokHelper {
         return String.format("%d:%02d", minutes, seconds);
     }
 
+    /**
+     * Formats ticks into HH:MM:SS format.
+     */
     public static String formatTicksToHMS(int ticks) {
         int totalSeconds = ticks / TICKS_PER_SECOND;
         int hours = totalSeconds / 3600;

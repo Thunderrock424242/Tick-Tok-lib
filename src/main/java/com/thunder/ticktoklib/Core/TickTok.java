@@ -1,9 +1,6 @@
 package com.thunder.ticktoklib.Core;
 
 import com.thunder.ticktoklib.TickTokConfig;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -14,23 +11,13 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import net.neoforged.neoforge.network.handling.IPayloadHandler;
-
-import java.util.HashMap;
-import java.util.Map;
-
 
 /**
  * Main mod class for Tick Time Lib.
  */
 @Mod(ModConstants.MOD_ID)
+
 public class TickTok {
-
-    private static final Map<CustomPacketPayload.Type<?>, NetworkMessage<?>> MESSAGES = new HashMap<>();
-
-    private record NetworkMessage<T extends CustomPacketPayload>(StreamCodec<? extends FriendlyByteBuf, T> reader,
-                                                                 IPayloadHandler<T> handler) {
-    }
 
     /**
      * Instantiates a new Wilderness odyssey api main mod class.

@@ -18,7 +18,6 @@ public class TickTokAPI {
     public static int duration(int hours, int minutes, int seconds) {
         return TickTokHelper.duration(hours, minutes, seconds);
     }
-
     public static String format(int ticks) {
         return TickTokHelper.formatTicksToHMS(ticks);
     }
