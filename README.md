@@ -23,3 +23,18 @@ Additional Resources:
 ==========
 Community Documentation: https://docs.neoforged.net/  
 NeoForged Discord: https://discord.neoforged.net/
+
+Sub-Tick Scheduler
+------------------
+The library now exposes a small `SubTickScheduler` utility for running tasks at
+fractions of a Minecraft tick. This lets you schedule work with half or quarter
+ tick precision by delaying runnables using real time. Example:
+
+```java
+SubTickScheduler.scheduleHalfTick(() -> {
+    // code to execute ~25ms later
+});
+```
+
+Remember that scheduled tasks run on a separate thread; interact with the game
+only from the main thread.
