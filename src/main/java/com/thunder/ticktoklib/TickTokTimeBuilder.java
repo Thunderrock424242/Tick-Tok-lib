@@ -1,7 +1,10 @@
 package com.thunder.ticktoklib;
 
 public class TickTokTimeBuilder {
-    private int hours = 0, minutes = 0, seconds = 0;
+    private int hours        = 0;
+    private int minutes      = 0;
+    private int seconds      = 0;
+    private int milliseconds = 0;
 
     public TickTokTimeBuilder hours(int h) {
         this.hours = h; return this;
@@ -15,7 +18,14 @@ public class TickTokTimeBuilder {
         this.seconds = s; return this;
     }
 
-    public long toTicks() {
-        return TickTokHelper.duration(hours, minutes, seconds);
+    public TickTokTimeBuilder milliseconds(int ms) {
+        this.milliseconds = ms; return this;
+    }
+
+    /**
+     * @return total ticks for the specified hours/minutes/seconds/milliseconds
+     */
+    public int toTicks() {
+        return TickTokHelper.duration(hours, minutes, seconds, milliseconds);
     }
 }

@@ -5,12 +5,13 @@ package com.thunder.ticktoklib;
  */
 public class TickTokHelper {
 
-    public static final int TICKS_PER_SECOND = 20;
-    public static final int TICKS_PER_MINUTE = TICKS_PER_SECOND * 60;
-    public static final int TICKS_PER_HOUR = TICKS_PER_MINUTE * 60;
+    public static final int TICKS_PER_SECOND   = 20;
+    public static final int TICKS_PER_MINUTE   = TICKS_PER_SECOND * 60;
+    public static final int TICKS_PER_HOUR     = TICKS_PER_MINUTE * 60;
+    public static final int MS_PER_TICK        = 1000 / TICKS_PER_SECOND; // 50 ms per tick
 
     // Core conversions
-    public static int toTicks(int seconds) {
+    public static int toTicksSeconds(int seconds) {
         return seconds * TICKS_PER_SECOND;
     }
 
@@ -20,6 +21,13 @@ public class TickTokHelper {
 
     public static int toTicksHours(int hours) {
         return hours * TICKS_PER_HOUR;
+    }
+
+    /**
+     * Converts milliseconds to ticks, rounding to nearest tick.
+     */
+    public static int toTicksMilliseconds(int milliseconds) {
+        return Math.round(milliseconds * (TICKS_PER_SECOND / 1000f));
     }
 
     public static float toSeconds(int ticks) {
@@ -35,15 +43,26 @@ public class TickTokHelper {
     }
 
     /**
+     * Converts ticks back into total milliseconds.
+     */
+    public static int toMilliseconds(int ticks) {
+        return ticks * MS_PER_TICK;
+    }
+
+    /**
      * Converts the given time to total ticks.
      *
-     * @param hours   number of hours
-     * @param minutes number of minutes
-     * @param seconds number of seconds
-     * @return ticks
+     * @param hours       number of hours
+     * @param minutes     number of minutes
+     * @param seconds     number of seconds
+     * @param milliseconds number of milliseconds
+     * @return total ticks
      */
-    public static int duration(int hours, int minutes, int seconds) {
-        return (hours * TICKS_PER_HOUR) + (minutes * TICKS_PER_MINUTE) + (seconds * TICKS_PER_SECOND);
+    public static int duration(int hours, int minutes, int seconds, int milliseconds) {
+        int base =      hours   * TICKS_PER_HOUR
+                + minutes * TICKS_PER_MINUTE
+                + seconds * TICKS_PER_SECOND;
+        return base + toTicksMilliseconds(milliseconds);
     }
 
     /**
@@ -53,26 +72,5 @@ public class TickTokHelper {
      */
     public static TickTokTimeBuilder time() {
         return new TickTokTimeBuilder();
-    }
-
-    /**
-     * Formats ticks into MM:SS format.
-     */
-    public static String formatTicksToMinSec(int ticks) {
-        int totalSeconds = ticks / TICKS_PER_SECOND;
-        int minutes = totalSeconds / 60;
-        int seconds = totalSeconds % 60;
-        return String.format("%d:%02d", minutes, seconds);
-    }
-
-    /**
-     * Formats ticks into HH:MM:SS format.
-     */
-    public static String formatTicksToHMS(int ticks) {
-        int totalSeconds = ticks / TICKS_PER_SECOND;
-        int hours = totalSeconds / 3600;
-        int minutes = (totalSeconds % 3600) / 60;
-        int seconds = totalSeconds % 60;
-        return String.format("%d:%02d:%02d", hours, minutes, seconds);
     }
 }
