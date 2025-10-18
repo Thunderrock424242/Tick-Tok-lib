@@ -27,20 +27,34 @@ public class TickTok {
      */
     public TickTok(IEventBus modEventBus, ModContainer container) {
 
+        ModConstants.LOGGER.info("Initializing TickTok core module");
+
         // Register mod setup and creative tabs
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::addCreative);
 
+        if (ModConstants.LOGGER.isDebugEnabled()) {
+            ModConstants.LOGGER.debug("TickTok constructor - registered listeners for FMLCommonSetupEvent and BuildCreativeModeTabContentsEvent");
+        }
+
         // Register global events
         NeoForge.EVENT_BUS.register(this);
 
+        if (ModConstants.LOGGER.isDebugEnabled()) {
+            ModConstants.LOGGER.debug("TickTok constructor - subscribed to NeoForge.EVENT_BUS with {}", this.getClass().getSimpleName());
+        }
+
         container.registerConfig(ModConfig.Type.COMMON, TickTokConfig.SPEC);
+
+        if (ModConstants.LOGGER.isDebugEnabled()) {
+            ModConstants.LOGGER.debug("TickTok constructor - registered TickTokConfig.SPEC with ModConfig");
+        }
 
 
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> System.out.println("Tick Tok Lib setup complete!"));
+        event.enqueueWork(() -> ModConstants.LOGGER.info("Tick Tok Lib setup complete via FMLCommonSetupEvent"));
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
@@ -55,7 +69,9 @@ public class TickTok {
      */
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
-
+        if (ModConstants.LOGGER.isDebugEnabled()) {
+            ModConstants.LOGGER.debug("TickTok.onServerStarting triggered for server {}", event.getServer().getServerVersion());
+        }
     }
 
     /**
@@ -65,5 +81,9 @@ public class TickTok {
      */
     @SubscribeEvent
     public void onRegisterCommands(RegisterCommandsEvent event) {
+        if (ModConstants.LOGGER.isTraceEnabled()) {
+            ModConstants.LOGGER.trace("TickTok.onRegisterCommands invoked - delegating to command registration (none configured)");
+        }
     }
 }
+
