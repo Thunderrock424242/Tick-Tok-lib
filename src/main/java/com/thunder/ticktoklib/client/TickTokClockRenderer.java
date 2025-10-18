@@ -1,5 +1,6 @@
 package com.thunder.ticktoklib.client;
 
+import com.thunder.ticktoklib.Core.ModConstants;
 import com.thunder.ticktoklib.TickTokConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -30,11 +31,20 @@ public class TickTokClockRenderer {
 
         if (mc.player == null || mc.level == null) return;
 
+        if (ModConstants.LOGGER.isTraceEnabled()) {
+            ModConstants.LOGGER.trace("TickTokClockRenderer.onRender - player={}, level={}"
+                    , mc.player.getName().getString(), mc.level.dimension().location());
+        }
+
         ItemStack mainHand = mc.player.getMainHandItem();
         ItemStack offHand = mc.player.getOffhandItem();
 
         // Only show if holding a clock
         if (!mainHand.is(Items.CLOCK) && !offHand.is(Items.CLOCK)) return;
+
+        if (ModConstants.LOGGER.isDebugEnabled()) {
+            ModConstants.LOGGER.debug("TickTokClockRenderer.onRender - rendering HUD overlay using TickTokConfig settings");
+        }
 
         GuiGraphics graphics = event.getGuiGraphics();
         var font = mc.font;
@@ -51,11 +61,19 @@ public class TickTokClockRenderer {
             String gameTime = formatMinecraftTime(mc.level.getDayTime());
             graphics.drawString(font, "Game Time: " + gameTime, x, y, 0xFFFFFF, true);
             y += 12;
+
+            if (ModConstants.LOGGER.isTraceEnabled()) {
+                ModConstants.LOGGER.trace("TickTokClockRenderer - displayed game time via TickTokConfig.SHOW_GAME_TIME");
+            }
         }
 
         if (TickTokConfig.SHOW_LOCAL_TIME.get()) {
             String localTime = LocalTime.now().format(LOCAL_TIME_FORMAT);
             graphics.drawString(font, "Local Time: " + localTime, x, y, 0xAAAAFF, true);
+
+            if (ModConstants.LOGGER.isTraceEnabled()) {
+                ModConstants.LOGGER.trace("TickTokClockRenderer - displayed local time via TickTokConfig.SHOW_LOCAL_TIME");
+            }
         }
 
         graphics.pose().popPose();
@@ -68,3 +86,4 @@ public class TickTokClockRenderer {
         return String.format("%02d:%02d", hours, minutes);
     }
 }
+
