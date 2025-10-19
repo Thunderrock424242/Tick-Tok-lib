@@ -5,15 +5,22 @@ import com.thunder.ticktoklib.Core.ModConstants;
 import com.thunder.ticktoklib.TickTokFormatter;
 import com.thunder.ticktoklib.TickTokHelper;
 import com.thunder.ticktoklib.TickTokTimeBuilder;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Public API façade for TickTokLib.
  */
 public class TickTokAPI {
 
+    private static final Set<String> LOGGED_DELEGATIONS = ConcurrentHashMap.newKeySet();
+
     private static void logDelegation(String methodName, String target, String details) {
         if (ModConstants.LOGGER.isDebugEnabled()) {
-            ModConstants.LOGGER.debug("TickTokAPI.{} -> {} ({})", methodName, target, details);
+            String key = methodName + "->" + target;
+            if (LOGGED_DELEGATIONS.add(key)) {
+                ModConstants.LOGGER.debug("TickTokAPI.{} -> {} ({})", methodName, target, details);
+            }
         }
     }
 
