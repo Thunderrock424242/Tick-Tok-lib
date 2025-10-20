@@ -1,13 +1,14 @@
 package com.thunder.ticktoklib;
 
 import com.thunder.ticktoklib.Core.ModConstants;
+import com.thunder.ticktoklib.TickTokConfig;
 
 import static com.thunder.ticktoklib.TickTokHelper.MS_PER_TICK;
 
 public class TickTokFormatter {
 
     private static void logFormatting(String methodName, long ticks, String formatted) {
-        if (ModConstants.LOGGER.isDebugEnabled()) {
+        if (TickTokConfig.ENABLE_DEBUG_LOGGING.get() && ModConstants.LOGGER.isDebugEnabled()) {
             ModConstants.LOGGER.debug("TickTokFormatter.{}(ticks={}) -> {}", methodName, ticks, formatted);
         }
     }

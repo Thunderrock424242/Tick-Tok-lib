@@ -1,6 +1,7 @@
 package com.thunder.ticktoklib;
 
 import com.thunder.ticktoklib.Core.ModConstants;
+import com.thunder.ticktoklib.TickTokConfig;
 
 public class TickTokTimeBuilder {
     private int hours        = 0;
@@ -28,7 +29,7 @@ public class TickTokTimeBuilder {
      * @return total ticks for the specified hours/minutes/seconds/milliseconds
      */
     public int toTicks() {
-        if (ModConstants.LOGGER.isDebugEnabled()) {
+        if (TickTokConfig.ENABLE_DEBUG_LOGGING.get() && ModConstants.LOGGER.isDebugEnabled()) {
             ModConstants.LOGGER.debug(
                     "TickTokTimeBuilder.toTicks -> TickTokHelper.duration(h={}, m={}, s={}, ms={})",
                     hours, minutes, seconds, milliseconds

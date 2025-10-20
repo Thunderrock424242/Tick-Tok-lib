@@ -2,6 +2,7 @@ package com.thunder.ticktoklib.api;
 
 
 import com.thunder.ticktoklib.Core.ModConstants;
+import com.thunder.ticktoklib.TickTokConfig;
 import com.thunder.ticktoklib.TickTokFormatter;
 import com.thunder.ticktoklib.TickTokHelper;
 import com.thunder.ticktoklib.TickTokTimeBuilder;
@@ -11,7 +12,7 @@ import com.thunder.ticktoklib.TickTokTimeBuilder;
  */
 public class TickTokAPI {
     private static void logDelegation(String methodName, String target, String details) {
-        if (ModConstants.LOGGER.isDebugEnabled()) {
+        if (TickTokConfig.ENABLE_DEBUG_LOGGING.get() && ModConstants.LOGGER.isDebugEnabled()) {
             ModConstants.LOGGER.debug("TickTokAPI.{} -> {} ({})", methodName, target, details);
         }
     }
