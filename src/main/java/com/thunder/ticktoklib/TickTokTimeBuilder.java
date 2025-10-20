@@ -29,7 +29,7 @@ public class TickTokTimeBuilder {
      * @return total ticks for the specified hours/minutes/seconds/milliseconds
      */
     public int toTicks() {
-        if (TickTokConfig.ENABLE_DEBUG_LOGGING.get() && ModConstants.LOGGER.isDebugEnabled()) {
+        if (TickTokConfig.isDebugLoggingEnabled() && ModConstants.LOGGER.isDebugEnabled()) {
             ModConstants.LOGGER.debug(
                     "TickTokTimeBuilder.toTicks -> TickTokHelper.duration(h={}, m={}, s={}, ms={})",
                     hours, minutes, seconds, milliseconds

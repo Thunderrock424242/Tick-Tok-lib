@@ -42,7 +42,7 @@ public class TickTokClockRenderer {
         // Only show if holding a clock
         if (!mainHand.is(Items.CLOCK) && !offHand.is(Items.CLOCK)) return;
 
-        if (TickTokConfig.ENABLE_DEBUG_LOGGING.get() && ModConstants.LOGGER.isDebugEnabled()) {
+        if (TickTokConfig.isDebugLoggingEnabled() && ModConstants.LOGGER.isDebugEnabled()) {
             ModConstants.LOGGER.debug("TickTokClockRenderer.onRender - rendering HUD overlay using TickTokConfig settings");
         }
 
@@ -57,7 +57,7 @@ public class TickTokClockRenderer {
         graphics.pose().pushPose();
         graphics.pose().translate(0, 0, 1000); // Ensure it's drawn above everything
 
-        if (TickTokConfig.SHOW_GAME_TIME.get()) {
+        if (TickTokConfig.showGameTime()) {
             String gameTime = formatMinecraftTime(mc.level.getDayTime());
             graphics.drawString(font, "Game Time: " + gameTime, x, y, 0xFFFFFF, true);
             y += 12;
@@ -67,7 +67,7 @@ public class TickTokClockRenderer {
             }
         }
 
-        if (TickTokConfig.SHOW_LOCAL_TIME.get()) {
+        if (TickTokConfig.showLocalTime()) {
             String localTime = LocalTime.now().format(LOCAL_TIME_FORMAT);
             graphics.drawString(font, "Local Time: " + localTime, x, y, 0xAAAAFF, true);
 

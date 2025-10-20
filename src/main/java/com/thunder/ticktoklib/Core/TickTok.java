@@ -33,20 +33,20 @@ public class TickTok {
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::addCreative);
 
-        if (TickTokConfig.ENABLE_DEBUG_LOGGING.get() && ModConstants.LOGGER.isDebugEnabled()) {
+        if (TickTokConfig.isDebugLoggingEnabled() && ModConstants.LOGGER.isDebugEnabled()) {
             ModConstants.LOGGER.debug("TickTok constructor - registered listeners for FMLCommonSetupEvent and BuildCreativeModeTabContentsEvent");
         }
 
         // Register global events
         NeoForge.EVENT_BUS.register(this);
 
-        if (TickTokConfig.ENABLE_DEBUG_LOGGING.get() && ModConstants.LOGGER.isDebugEnabled()) {
+        if (TickTokConfig.isDebugLoggingEnabled() && ModConstants.LOGGER.isDebugEnabled()) {
             ModConstants.LOGGER.debug("TickTok constructor - subscribed to NeoForge.EVENT_BUS with {}", this.getClass().getSimpleName());
         }
 
         container.registerConfig(ModConfig.Type.COMMON, TickTokConfig.SPEC);
 
-        if (TickTokConfig.ENABLE_DEBUG_LOGGING.get() && ModConstants.LOGGER.isDebugEnabled()) {
+        if (TickTokConfig.isDebugLoggingEnabled() && ModConstants.LOGGER.isDebugEnabled()) {
             ModConstants.LOGGER.debug("TickTok constructor - registered TickTokConfig.SPEC with ModConfig");
         }
 
@@ -69,7 +69,7 @@ public class TickTok {
      */
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
-        if (TickTokConfig.ENABLE_DEBUG_LOGGING.get() && ModConstants.LOGGER.isDebugEnabled()) {
+        if (TickTokConfig.isDebugLoggingEnabled() && ModConstants.LOGGER.isDebugEnabled()) {
             ModConstants.LOGGER.debug("TickTok.onServerStarting triggered for server {}", event.getServer().getServerVersion());
         }
     }

@@ -12,7 +12,7 @@ import com.thunder.ticktoklib.TickTokTimeBuilder;
  */
 public class TickTokAPI {
     private static void logDelegation(String methodName, String target, String details) {
-        if (TickTokConfig.ENABLE_DEBUG_LOGGING.get() && ModConstants.LOGGER.isDebugEnabled()) {
+        if (TickTokConfig.isDebugLoggingEnabled() && ModConstants.LOGGER.isDebugEnabled()) {
             ModConstants.LOGGER.debug("TickTokAPI.{} -> {} ({})", methodName, target, details);
         }
     }

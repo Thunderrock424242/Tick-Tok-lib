@@ -8,7 +8,7 @@ import static com.thunder.ticktoklib.TickTokHelper.MS_PER_TICK;
 public class TickTokFormatter {
 
     private static void logFormatting(String methodName, long ticks, String formatted) {
-        if (TickTokConfig.ENABLE_DEBUG_LOGGING.get() && ModConstants.LOGGER.isDebugEnabled()) {
+        if (TickTokConfig.isDebugLoggingEnabled() && ModConstants.LOGGER.isDebugEnabled()) {
             ModConstants.LOGGER.debug("TickTokFormatter.{}(ticks={}) -> {}", methodName, ticks, formatted);
         }
     }
