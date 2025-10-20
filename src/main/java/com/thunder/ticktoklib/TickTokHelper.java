@@ -102,7 +102,7 @@ public class TickTokHelper {
      * @return TickTokTimeBuilder
      */
     public static TickTokTimeBuilder time() {
-        if (TickTokConfig.ENABLE_DEBUG_LOGGING.get() && ModConstants.LOGGER.isDebugEnabled()) {
+        if (TickTokConfig.isDebugLoggingEnabled() && ModConstants.LOGGER.isDebugEnabled()) {
             ModConstants.LOGGER.debug("TickTokHelper.time() -> new TickTokTimeBuilder");
         }
         return new TickTokTimeBuilder();
