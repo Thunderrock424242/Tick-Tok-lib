@@ -1,6 +1,7 @@
 package com.thunder.ticktoklib;
 
 import com.thunder.ticktoklib.Core.ModConstants;
+import com.thunder.ticktoklib.TickTokConfig;
 
 /**
  * Core utility class for converting between Minecraft ticks and real-world time.
@@ -101,7 +102,7 @@ public class TickTokHelper {
      * @return TickTokTimeBuilder
      */
     public static TickTokTimeBuilder time() {
-        if (ModConstants.LOGGER.isDebugEnabled()) {
+        if (TickTokConfig.ENABLE_DEBUG_LOGGING.get() && ModConstants.LOGGER.isDebugEnabled()) {
             ModConstants.LOGGER.debug("TickTokHelper.time() -> new TickTokTimeBuilder");
         }
         return new TickTokTimeBuilder();

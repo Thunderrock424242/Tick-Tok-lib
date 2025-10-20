@@ -42,7 +42,7 @@ public class TickTokClockRenderer {
         // Only show if holding a clock
         if (!mainHand.is(Items.CLOCK) && !offHand.is(Items.CLOCK)) return;
 
-        if (ModConstants.LOGGER.isDebugEnabled()) {
+        if (TickTokConfig.ENABLE_DEBUG_LOGGING.get() && ModConstants.LOGGER.isDebugEnabled()) {
             ModConstants.LOGGER.debug("TickTokClockRenderer.onRender - rendering HUD overlay using TickTokConfig settings");
         }
 

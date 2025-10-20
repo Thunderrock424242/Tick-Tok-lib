@@ -10,6 +10,7 @@ public class TickTokConfig {
     public static final ModConfigSpec.BooleanValue SHOW_LOCAL_TIME;
     public static final ModConfigSpec.ConfigValue<String> GAME_TIME_POSITION;
     public static final ModConfigSpec.ConfigValue<String> LOCAL_TIME_POSITION;
+    public static final ModConfigSpec.BooleanValue ENABLE_DEBUG_LOGGING;
 
     static {
         BUILDER.push("Tick Time Display Options");
@@ -29,6 +30,14 @@ public class TickTokConfig {
         LOCAL_TIME_POSITION = BUILDER
                 .comment("Local time position: top_left, top_right, bottom_left, bottom_right")
                 .define("local_time_position", "top_right");
+
+        BUILDER.pop();
+
+        BUILDER.push("Debugging");
+
+        ENABLE_DEBUG_LOGGING = BUILDER
+                .comment("Enable verbose debug-level logging output in the console")
+                .define("enable_debug_logging", false);
 
         BUILDER.pop();
         SPEC = BUILDER.build();
