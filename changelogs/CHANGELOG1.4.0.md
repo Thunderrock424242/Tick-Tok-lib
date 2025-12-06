@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [Released]
 ### Highlights
 - Added a `/ticktok` helper command with `now` and `convert` subcommands so admins can inspect the current day time/phase and convert tick values in-game.
 - Expanded tick/time helpers with long/double inputs, new clock formatting options, countdown callbacks, and time-of-day phase utilities.
