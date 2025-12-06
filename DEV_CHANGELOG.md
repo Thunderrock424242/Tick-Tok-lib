@@ -11,9 +11,7 @@
 - Tick-phase tracking respects a new `enable_tick_optimization` flag to sample world time once per second instead of every tick for lighter performance.
 
 ### Configuration and HUD
-- HUD positions are typed with the `HudPosition` enum and enforced via `ModConfigSpec.EnumValue`, aligning both game/local clocks with explicit corners.
 - Debugging options are split into targeted trace toggles: conversions, formatting, and events alongside the existing debug toggle.
 
 ### Migration notes
-- Config files that used arbitrary strings for HUD alignment may need their values updated to the enum names; regeneration will produce the correct tokens.
 - Listeners expecting phase lifecycle should subscribe to the new start/end events instead of computing phases manually.

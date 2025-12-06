@@ -3,7 +3,6 @@ package com.thunder.ticktoklib.client;
 import com.thunder.ticktoklib.Core.ModConstants;
 import com.thunder.ticktoklib.TickTokConfig;
 import com.thunder.ticktoklib.TickTokFormatter;
-import com.thunder.ticktoklib.config.HudPosition;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
@@ -48,22 +47,18 @@ public class TickTokClockRenderer {
         GuiGraphics graphics = event.getGuiGraphics();
         var font = mc.font;
 
-        int screenWidth = mc.getWindow().getGuiScaledWidth();
-        int screenHeight = mc.getWindow().getGuiScaledHeight();
-        int margin = 8;
+        int x = 10;
+        int y = 10;
 
         graphics.pose().pushPose();
         graphics.pose().translate(0, 0, 1000); // Ensure it's drawn above everything
 
-        int yOffset = 0;
         if (TickTokConfig.showGameTime()) {
             long dayTime = Math.floorMod(mc.level.getDayTime(), 24000L);
             String gameTime = TickTokFormatter.formatClock(dayTime, true, false, true, Locale.getDefault());
             String text = "Game Time: " + gameTime;
-            int x = alignX(screenWidth, margin, font.width(text), TickTokConfig.gameTimePosition());
-            int y = alignY(screenHeight, margin, yOffset, TickTokConfig.gameTimePosition());
             graphics.drawString(font, text, x, y, 0xFFFFFF, true);
-            yOffset += font.lineHeight + 2;
+            y += font.lineHeight + 2;
 
             if (ModConstants.LOGGER.isTraceEnabled()) {
                 ModConstants.LOGGER.trace("TickTokClockRenderer - displayed game time via TickTokConfig.SHOW_GAME_TIME");
@@ -73,8 +68,6 @@ public class TickTokClockRenderer {
         if (TickTokConfig.showLocalTime()) {
             String localTime = LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
             String text = "Local Time: " + localTime;
-            int x = alignX(screenWidth, margin, font.width(text), TickTokConfig.localTimePosition());
-            int y = alignY(screenHeight, margin, yOffset, TickTokConfig.localTimePosition());
             graphics.drawString(font, text, x, y, 0xAAAAFF, true);
 
             if (ModConstants.LOGGER.isTraceEnabled()) {
@@ -83,19 +76,5 @@ public class TickTokClockRenderer {
         }
 
         graphics.pose().popPose();
-    }
-
-    private static int alignX(int screenWidth, int margin, int textWidth, HudPosition position) {
-        return switch (position) {
-            case TOP_LEFT, BOTTOM_LEFT -> margin;
-            case TOP_RIGHT, BOTTOM_RIGHT -> screenWidth - textWidth - margin;
-        };
-    }
-
-    private static int alignY(int screenHeight, int margin, int yOffset, HudPosition position) {
-        return switch (position) {
-            case TOP_LEFT, TOP_RIGHT -> margin + yOffset;
-            case BOTTOM_LEFT, BOTTOM_RIGHT -> screenHeight - margin - yOffset - 12; // approximate line height
-        };
     }
 }
