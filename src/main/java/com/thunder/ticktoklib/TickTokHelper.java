@@ -1,7 +1,8 @@
 package com.thunder.ticktoklib;
 
 import com.thunder.ticktoklib.Core.ModConstants;
-import com.thunder.ticktoklib.TickTokConfig;
+import com.thunder.ticktoklib.api.TickTokPhase;
+import com.thunder.ticktoklib.util.TickTokTimeRange;
 
 /**
  * Core utility class for converting between Minecraft ticks and real-world time.
@@ -14,26 +15,56 @@ public class TickTokHelper {
     public static final int MS_PER_TICK        = 1000 / TICKS_PER_SECOND; // 50 ms per tick
 
     private static void logConversion(String methodName, String input, Object result) {
-        if (ModConstants.LOGGER.isTraceEnabled()) {
+        if (TickTokConfig.isConversionTracingEnabled() && ModConstants.LOGGER.isTraceEnabled()) {
             ModConstants.LOGGER.trace("TickTokHelper.{}({}) -> {}", methodName, input, result);
         }
     }
 
     // Core conversions
     public static int toTicksSeconds(int seconds) {
-        int ticks = seconds * TICKS_PER_SECOND;
+        return Math.toIntExact(toTicksSeconds((long) seconds));
+    }
+
+    public static long toTicksSeconds(long seconds) {
+        long ticks = seconds * TICKS_PER_SECOND;
+        logConversion("toTicksSeconds", "seconds=" + seconds, ticks);
+        return ticks;
+    }
+
+    public static long toTicksSeconds(double seconds) {
+        long ticks = Math.round(seconds * TICKS_PER_SECOND);
         logConversion("toTicksSeconds", "seconds=" + seconds, ticks);
         return ticks;
     }
 
     public static int toTicksMinutes(int minutes) {
-        int ticks = minutes * TICKS_PER_MINUTE;
+        return Math.toIntExact(toTicksMinutes((long) minutes));
+    }
+
+    public static long toTicksMinutes(long minutes) {
+        long ticks = minutes * TICKS_PER_MINUTE;
+        logConversion("toTicksMinutes", "minutes=" + minutes, ticks);
+        return ticks;
+    }
+
+    public static long toTicksMinutes(double minutes) {
+        long ticks = Math.round(minutes * TICKS_PER_MINUTE);
         logConversion("toTicksMinutes", "minutes=" + minutes, ticks);
         return ticks;
     }
 
     public static int toTicksHours(int hours) {
-        int ticks = hours * TICKS_PER_HOUR;
+        return Math.toIntExact(toTicksHours((long) hours));
+    }
+
+    public static long toTicksHours(long hours) {
+        long ticks = hours * TICKS_PER_HOUR;
+        logConversion("toTicksHours", "hours=" + hours, ticks);
+        return ticks;
+    }
+
+    public static long toTicksHours(double hours) {
+        long ticks = Math.round(hours * TICKS_PER_HOUR);
         logConversion("toTicksHours", "hours=" + hours, ticks);
         return ticks;
     }
@@ -42,7 +73,11 @@ public class TickTokHelper {
      * Converts milliseconds to ticks, rounding to nearest tick.
      */
     public static int toTicksMilliseconds(int milliseconds) {
-        int ticks = Math.round(milliseconds * (TICKS_PER_SECOND / 1000f));
+        return Math.toIntExact(toTicksMilliseconds((long) milliseconds));
+    }
+
+    public static long toTicksMilliseconds(long milliseconds) {
+        long ticks = Math.round(milliseconds * (TICKS_PER_SECOND / 1000f));
         logConversion("toTicksMilliseconds", "milliseconds=" + milliseconds, ticks);
         return ticks;
     }
@@ -69,7 +104,11 @@ public class TickTokHelper {
      * Converts ticks back into total milliseconds.
      */
     public static int toMilliseconds(int ticks) {
-        int milliseconds = ticks * MS_PER_TICK;
+        return Math.toIntExact(toMillisecondsLong(ticks));
+    }
+
+    public static long toMillisecondsLong(long ticks) {
+        long milliseconds = ticks * MS_PER_TICK;
         logConversion("toMilliseconds", "ticks=" + ticks, milliseconds);
         return milliseconds;
     }
@@ -84,10 +123,15 @@ public class TickTokHelper {
      * @return total ticks
      */
     public static int duration(int hours, int minutes, int seconds, int milliseconds) {
-        int base =      hours   * TICKS_PER_HOUR
+        long ticks = durationLong(hours, minutes, seconds, milliseconds);
+        return Math.toIntExact(ticks);
+    }
+
+    public static long durationLong(long hours, long minutes, long seconds, long milliseconds) {
+        long base =      hours   * TICKS_PER_HOUR
                 + minutes * TICKS_PER_MINUTE
                 + seconds * TICKS_PER_SECOND;
-        int ticks = base + toTicksMilliseconds(milliseconds);
+        long ticks = base + toTicksMilliseconds(milliseconds);
         logConversion(
                 "duration",
                 String.format("h=%d, m=%d, s=%d, ms=%d", hours, minutes, seconds, milliseconds),
@@ -106,5 +150,34 @@ public class TickTokHelper {
             ModConstants.LOGGER.debug("TickTokHelper.time() -> new TickTokTimeBuilder");
         }
         return new TickTokTimeBuilder();
+    }
+
+    /**
+     * Normalizes an absolute world tick value into the current day cycle (0-23999).
+     */
+    public static long clampToDay(long dayTime) {
+        long clamped = Math.floorMod(dayTime, TickTokTimeRange.FULL_DAY);
+        logConversion("clampToDay", "dayTime=" + dayTime, clamped);
+        return clamped;
+    }
+
+    public static TickTokPhase resolvePhase(long dayTime) {
+        TickTokPhase phase = TickTokTimeRange.phaseFor(clampToDay(dayTime));
+        logConversion("resolvePhase", "dayTime=" + dayTime, phase);
+        return phase;
+    }
+
+    public static long ticksUntilPhase(long dayTime, TickTokPhase phase) {
+        long clamped = clampToDay(dayTime);
+        long ticks = TickTokTimeRange.ticksUntilPhase(clamped, phase);
+        logConversion("ticksUntilPhase", "dayTime=" + dayTime + ", target=" + phase, ticks);
+        return ticks;
+    }
+
+    public static long ticksSincePhaseStart(long dayTime, TickTokPhase phase) {
+        long clamped = clampToDay(dayTime);
+        long ticks = TickTokTimeRange.ticksSincePhaseStart(clamped, phase);
+        logConversion("ticksSincePhaseStart", "dayTime=" + dayTime + ", target=" + phase, ticks);
+        return ticks;
     }
 }

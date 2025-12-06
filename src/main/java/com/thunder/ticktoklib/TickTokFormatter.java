@@ -1,15 +1,19 @@
 package com.thunder.ticktoklib;
 
 import com.thunder.ticktoklib.Core.ModConstants;
-import com.thunder.ticktoklib.TickTokConfig;
+
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import static com.thunder.ticktoklib.TickTokHelper.MS_PER_TICK;
 
 public class TickTokFormatter {
 
     private static void logFormatting(String methodName, long ticks, String formatted) {
-        if (TickTokConfig.isDebugLoggingEnabled() && ModConstants.LOGGER.isDebugEnabled()) {
-            ModConstants.LOGGER.debug("TickTokFormatter.{}(ticks={}) -> {}", methodName, ticks, formatted);
+        if (TickTokConfig.isFormattingTracingEnabled() && ModConstants.LOGGER.isTraceEnabled()) {
+            ModConstants.LOGGER.trace("TickTokFormatter.{}(ticks={}) -> {}", methodName, ticks, formatted);
         }
     }
 
@@ -44,5 +48,30 @@ public class TickTokFormatter {
         String formatted = String.format("%02d:%02d:%02d.%03d", hours, minutes, seconds, millis);
         logFormatting("formatHMSms", ticks, formatted);
         return formatted;
+    }
+
+    /**
+     * Format ticks using a locale-aware clock pattern (12h/24h depending on pattern).
+     */
+    public static String formatLocalized(long ticks, String pattern, Locale locale, ZoneId zoneId) {
+        LocalTime time = LocalTime.ofNanoOfDay(TickTokHelper.toMillisecondsLong(ticks) * 1_000_000L)
+                .atDate(java.time.LocalDate.EPOCH)
+                .atZone(zoneId)
+                .toLocalTime();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern, locale);
+        String formatted = formatter.format(time);
+        logFormatting("formatLocalized", ticks, formatted);
+        return formatted;
+    }
+
+    public static String formatClock(long ticks, boolean includeSeconds, boolean includeMillis, boolean twentyFourHour, Locale locale) {
+        String pattern = twentyFourHour ? "HH:mm" : "hh:mm a";
+        if (includeSeconds) {
+            pattern = twentyFourHour ? "HH:mm:ss" : "hh:mm:ss a";
+        }
+        if (includeMillis) {
+            pattern += ".SSS";
+        }
+        return formatLocalized(ticks, pattern, locale, ZoneId.systemDefault());
     }
 }

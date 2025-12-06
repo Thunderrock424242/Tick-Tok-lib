@@ -1,6 +1,14 @@
 package com.thunder.ticktoklib.Core;
 
+import com.mojang.brigadier.arguments.LongArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.thunder.ticktoklib.TickTokConfig;
+import com.thunder.ticktoklib.api.TickTokAPI;
+import com.thunder.ticktoklib.api.TickTokPhase;
+import com.thunder.ticktoklib.util.TickTokPhaseTracker;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -11,6 +19,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 /**
  * Main mod class for Tick Time Lib.
@@ -18,6 +27,10 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 @Mod(ModConstants.MOD_ID)
 
 public class TickTok {
+
+    private static final int TICK_OPTIMIZATION_INTERVAL = 20;
+
+    private final TickTokPhaseTracker phaseTracker = new TickTokPhaseTracker();
 
     /**
      * Instantiates a new Wilderness odyssey api main mod class.
@@ -81,9 +94,41 @@ public class TickTok {
      */
     @SubscribeEvent
     public void onRegisterCommands(RegisterCommandsEvent event) {
+        LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("ticktok")
+                .requires(source -> source.hasPermission(2))
+                .then(Commands.literal("now")
+                        .executes(ctx -> {
+                            long dayTime = ctx.getSource().getLevel().getDayTime();
+                            TickTokPhase phase = TickTokAPI.currentPhase(dayTime);
+                            ctx.getSource().sendSuccess(() -> Component.literal(String.format("Day time: %d (%s)", dayTime, phase)), true);
+                            return 1;
+                        }))
+                .then(Commands.literal("convert")
+                        .then(Commands.argument("ticks", LongArgumentType.longArg(0))
+                                .executes(ctx -> {
+                                    long ticks = LongArgumentType.getLong(ctx, "ticks");
+                                    String formatted = TickTokAPI.formatHHMMSS(ticks);
+                                    ctx.getSource().sendSuccess(() -> Component.literal(String.format("%d ticks -> %s (%.2f seconds)", ticks, formatted, TickTokAPI.toSeconds((int) ticks))), false);
+                                    return 1;
+                                })));
+
+        event.getDispatcher().register(builder);
+
         if (ModConstants.LOGGER.isTraceEnabled()) {
-            ModConstants.LOGGER.trace("TickTok.onRegisterCommands invoked - delegating to command registration (none configured)");
+            ModConstants.LOGGER.trace("TickTok.onRegisterCommands registered /ticktok helpers");
         }
     }
-}
 
+    @SubscribeEvent
+    public void onLevelTick(LevelTickEvent.Post event) {
+        long dayTime = event.getLevel().getDayTime();
+
+        if (TickTokConfig.isTickOptimizationEnabled()) {
+            if (Math.floorMod(dayTime, TICK_OPTIMIZATION_INTERVAL) != 0) {
+                return;
+            }
+        }
+
+        phaseTracker.handle(dayTime, event.getLevel().dimension());
+    }
+}
