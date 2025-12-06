@@ -1,7 +1,6 @@
 package com.thunder.ticktoklib;
 
 import com.thunder.ticktoklib.Core.ModConstants;
-import com.thunder.ticktoklib.config.HudPosition;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.function.Supplier;
@@ -12,8 +11,6 @@ public class TickTokConfig {
 
     public static final ModConfigSpec.BooleanValue SHOW_GAME_TIME;
     public static final ModConfigSpec.BooleanValue SHOW_LOCAL_TIME;
-    public static final ModConfigSpec.EnumValue<HudPosition> GAME_TIME_POSITION;
-    public static final ModConfigSpec.EnumValue<HudPosition> LOCAL_TIME_POSITION;
     public static final ModConfigSpec.BooleanValue ENABLE_TICK_OPTIMIZATION;
     public static final ModConfigSpec.BooleanValue ENABLE_DEBUG_LOGGING;
     public static final ModConfigSpec.BooleanValue ENABLE_TRACE_CONVERSIONS;
@@ -30,14 +27,6 @@ public class TickTokConfig {
         SHOW_LOCAL_TIME = BUILDER
                 .comment("Show local system time (HH:mm:ss) on screen")
                 .define("show_local_time", true);
-
-        GAME_TIME_POSITION = BUILDER
-                .comment("Game time position: TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT")
-                .defineEnum("game_time_position", HudPosition.TOP_LEFT);
-
-        LOCAL_TIME_POSITION = BUILDER
-                .comment("Local time position: TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT")
-                .defineEnum("local_time_position", HudPosition.TOP_RIGHT);
 
         BUILDER.pop();
 
@@ -118,11 +107,4 @@ public class TickTokConfig {
         return safeGet(SHOW_LOCAL_TIME, true);
     }
 
-    public static HudPosition gameTimePosition() {
-        return safeGet(GAME_TIME_POSITION, () -> HudPosition.TOP_LEFT);
-    }
-
-    public static HudPosition localTimePosition() {
-        return safeGet(LOCAL_TIME_POSITION, () -> HudPosition.TOP_RIGHT);
-    }
 }
