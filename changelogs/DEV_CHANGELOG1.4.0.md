@@ -1,6 +1,6 @@
 # Developer Changelog
 
-## [Unreleased]
+## [Released]
 ### API additions
 - `TickTokAPI` exposes long/double overloads for tick conversion, locale-aware `formatClock`/`formatLocalized`, phase helpers (`currentPhase`, `ticksUntilPhase`, `ticksSincePhaseStart`), and countdown factories that accept `Runnable` or `Consumer` callbacks.
 - `TickTokTimeBuilder.durationLong` returns long durations for large composite times; `TickTokFormatter` now supports 12h/24h patterns and localized clocks.
