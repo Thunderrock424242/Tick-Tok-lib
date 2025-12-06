@@ -45,7 +45,7 @@ public class TickTokConfig {
 
         ENABLE_TICK_OPTIMIZATION = BUILDER
                 .comment("Reduce TickTok's per-tick workload by sampling world time once per second (20 ticks)")
-                .define("enable_tick_optimization", true);
+                .define("enable_tick_optimization", false);
 
         BUILDER.pop();
 
