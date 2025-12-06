@@ -61,7 +61,7 @@ public class TickTokConfig {
     }
 
     public static boolean isTickOptimizationEnabled() {
-        return safeGet(ENABLE_TICK_OPTIMIZATION, true);
+        return safeGet(ENABLE_TICK_OPTIMIZATION, false);
     }
 
     private static <T> T safeGet(ModConfigSpec.ConfigValue<T> configValue, Supplier<T> fallbackSupplier) {
