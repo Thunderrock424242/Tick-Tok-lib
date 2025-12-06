@@ -57,7 +57,8 @@ public class TickTokClockRenderer {
 
         int yOffset = 0;
         if (TickTokConfig.showGameTime()) {
-            String gameTime = TickTokFormatter.formatClock(mc.level.getDayTime(), true, false, true, Locale.getDefault());
+            long dayTime = Math.floorMod(mc.level.getDayTime(), 24000L);
+            String gameTime = TickTokFormatter.formatClock(dayTime, true, false, true, Locale.getDefault());
             String text = "Game Time: " + gameTime;
             int x = alignX(screenWidth, margin, font.width(text), TickTokConfig.gameTimePosition());
             int y = alignY(screenHeight, margin, yOffset, TickTokConfig.gameTimePosition());
