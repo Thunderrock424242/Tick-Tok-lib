@@ -7,6 +7,12 @@ import com.thunder.ticktoklib.TickTokFormatter;
 import com.thunder.ticktoklib.TickTokHelper;
 import com.thunder.ticktoklib.TickTokTimeBuilder;
 
+import java.time.ZoneId;
+import java.util.Locale;
+import java.util.function.Consumer;
+
+import com.thunder.ticktoklib.util.TickTokCountdown;
+
 /**
  * Public API façade for TickTokLib.
  */
@@ -25,9 +31,29 @@ public class TickTokAPI {
         return TickTokHelper.toTicksSeconds(seconds);
     }
 
+    public static long toTicksFromSeconds(long seconds) {
+        logDelegation("toTicksFromSeconds(long)", "TickTokHelper.toTicksSeconds(long)", "seconds=" + seconds);
+        return TickTokHelper.toTicksSeconds(seconds);
+    }
+
+    public static long toTicksFromSeconds(double seconds) {
+        logDelegation("toTicksFromSeconds(double)", "TickTokHelper.toTicksSeconds(double)", "seconds=" + seconds);
+        return TickTokHelper.toTicksSeconds(seconds);
+    }
+
     /** Convert minutes → ticks. */
     public static int toTicksFromMinutes(int minutes) {
         logDelegation("toTicksFromMinutes", "TickTokHelper.toTicksMinutes", "minutes=" + minutes);
+        return TickTokHelper.toTicksMinutes(minutes);
+    }
+
+    public static long toTicksFromMinutes(long minutes) {
+        logDelegation("toTicksFromMinutes(long)", "TickTokHelper.toTicksMinutes(long)", "minutes=" + minutes);
+        return TickTokHelper.toTicksMinutes(minutes);
+    }
+
+    public static long toTicksFromMinutes(double minutes) {
+        logDelegation("toTicksFromMinutes(double)", "TickTokHelper.toTicksMinutes(double)", "minutes=" + minutes);
         return TickTokHelper.toTicksMinutes(minutes);
     }
 
@@ -37,9 +63,24 @@ public class TickTokAPI {
         return TickTokHelper.toTicksHours(hours);
     }
 
+    public static long toTicksFromHours(long hours) {
+        logDelegation("toTicksFromHours(long)", "TickTokHelper.toTicksHours(long)", "hours=" + hours);
+        return TickTokHelper.toTicksHours(hours);
+    }
+
+    public static long toTicksFromHours(double hours) {
+        logDelegation("toTicksFromHours(double)", "TickTokHelper.toTicksHours(double)", "hours=" + hours);
+        return TickTokHelper.toTicksHours(hours);
+    }
+
     /** Convert milliseconds → ticks (rounded). */
     public static int toTicksFromMilliseconds(int milliseconds) {
         logDelegation("toTicksFromMilliseconds", "TickTokHelper.toTicksMilliseconds", "milliseconds=" + milliseconds);
+        return TickTokHelper.toTicksMilliseconds(milliseconds);
+    }
+
+    public static long toTicksFromMilliseconds(long milliseconds) {
+        logDelegation("toTicksFromMilliseconds(long)", "TickTokHelper.toTicksMilliseconds(long)", "milliseconds=" + milliseconds);
         return TickTokHelper.toTicksMilliseconds(milliseconds);
     }
 
@@ -61,6 +102,11 @@ public class TickTokAPI {
     public static int duration(int hours, int minutes, int seconds, int milliseconds) {
         logDelegation("duration", "TickTokHelper.duration", String.format("h=%d, m=%d, s=%d, ms=%d", hours, minutes, seconds, milliseconds));
         return TickTokHelper.duration(hours, minutes, seconds, milliseconds);
+    }
+
+    public static long durationLong(long hours, long minutes, long seconds, long milliseconds) {
+        logDelegation("durationLong", "TickTokHelper.durationLong", String.format("h=%d, m=%d, s=%d, ms=%d", hours, minutes, seconds, milliseconds));
+        return TickTokHelper.durationLong(hours, minutes, seconds, milliseconds);
     }
 
     // ── Conversion from ticks back to real‐world units ───────────────
@@ -89,6 +135,11 @@ public class TickTokAPI {
         return TickTokHelper.toMilliseconds(ticks);
     }
 
+    public static long toMillisecondsLong(long ticks) {
+        logDelegation("toMillisecondsLong", "TickTokHelper.toMillisecondsLong", "ticks=" + ticks);
+        return TickTokHelper.toMillisecondsLong(ticks);
+    }
+
     // ── Formatting utilities ─────────────────────────────────────────
 
     /** Format ticks as "HH:mm". */
@@ -107,5 +158,47 @@ public class TickTokAPI {
     public static String formatHMSms(long ticks) {
         logDelegation("formatHMSms", "TickTokFormatter.formatHMSms", "ticks=" + ticks);
         return TickTokFormatter.formatHMSms(ticks);
+    }
+
+    public static String formatClock(long ticks, boolean includeSeconds, boolean includeMillis, boolean twentyFourHour, Locale locale) {
+        logDelegation("formatClock", "TickTokFormatter.formatClock", "ticks=" + ticks);
+        return TickTokFormatter.formatClock(ticks, includeSeconds, includeMillis, twentyFourHour, locale);
+    }
+
+    public static String formatLocalized(long ticks, String pattern, Locale locale, ZoneId zoneId) {
+        logDelegation("formatLocalized", "TickTokFormatter.formatLocalized", "ticks=" + ticks + ", pattern=" + pattern);
+        return TickTokFormatter.formatLocalized(ticks, pattern, locale, zoneId);
+    }
+
+    // ── Phase helpers ────────────────────────────────────────────────
+    public static TickTokPhase currentPhase(long dayTime) {
+        logDelegation("currentPhase", "TickTokHelper.resolvePhase", "dayTime=" + dayTime);
+        return TickTokHelper.resolvePhase(dayTime);
+    }
+
+    public static long ticksUntilPhase(long dayTime, TickTokPhase phase) {
+        logDelegation("ticksUntilPhase", "TickTokHelper.ticksUntilPhase", "dayTime=" + dayTime + ", target=" + phase);
+        return TickTokHelper.ticksUntilPhase(dayTime, phase);
+    }
+
+    public static long ticksSincePhaseStart(long dayTime, TickTokPhase phase) {
+        logDelegation("ticksSincePhaseStart", "TickTokHelper.ticksSincePhaseStart", "dayTime=" + dayTime + ", target=" + phase);
+        return TickTokHelper.ticksSincePhaseStart(dayTime, phase);
+    }
+
+    // ── Countdown helpers ───────────────────────────────────────────
+    public static TickTokCountdown countdown(long duration, long startTick) {
+        logDelegation("countdown", "TickTokCountdown", "duration=" + duration + ", startTick=" + startTick);
+        return new TickTokCountdown(duration, startTick, (Runnable) null);
+    }
+
+    public static TickTokCountdown countdown(long duration, long startTick, Runnable onComplete) {
+        logDelegation("countdown(callback)", "TickTokCountdown", "duration=" + duration + ", startTick=" + startTick);
+        return new TickTokCountdown(duration, startTick, onComplete);
+    }
+
+    public static TickTokCountdown countdown(long duration, long startTick, Consumer<TickTokCountdown> onComplete) {
+        logDelegation("countdown(consumer)", "TickTokCountdown", "duration=" + duration + ", startTick=" + startTick);
+        return new TickTokCountdown(duration, startTick, onComplete);
     }
 }

@@ -4,24 +4,24 @@ import com.thunder.ticktoklib.Core.ModConstants;
 import com.thunder.ticktoklib.TickTokConfig;
 
 public class TickTokTimeBuilder {
-    private int hours        = 0;
-    private int minutes      = 0;
-    private int seconds      = 0;
-    private int milliseconds = 0;
+    private long hours        = 0;
+    private long minutes      = 0;
+    private long seconds      = 0;
+    private long milliseconds = 0;
 
-    public TickTokTimeBuilder hours(int h) {
+    public TickTokTimeBuilder hours(long h) {
         this.hours = h; return this;
     }
 
-    public TickTokTimeBuilder minutes(int m) {
+    public TickTokTimeBuilder minutes(long m) {
         this.minutes = m; return this;
     }
 
-    public TickTokTimeBuilder seconds(int s) {
+    public TickTokTimeBuilder seconds(long s) {
         this.seconds = s; return this;
     }
 
-    public TickTokTimeBuilder milliseconds(int ms) {
+    public TickTokTimeBuilder milliseconds(long ms) {
         this.milliseconds = ms; return this;
     }
 
@@ -35,6 +35,16 @@ public class TickTokTimeBuilder {
                     hours, minutes, seconds, milliseconds
             );
         }
-        return TickTokHelper.duration(hours, minutes, seconds, milliseconds);
+        return Math.toIntExact(TickTokHelper.durationLong(hours, minutes, seconds, milliseconds));
+    }
+
+    public long toTicksLong() {
+        if (TickTokConfig.isDebugLoggingEnabled() && ModConstants.LOGGER.isDebugEnabled()) {
+            ModConstants.LOGGER.debug(
+                    "TickTokTimeBuilder.toTicksLong -> TickTokHelper.durationLong(h={}, m={}, s={}, ms={})",
+                    hours, minutes, seconds, milliseconds
+            );
+        }
+        return TickTokHelper.durationLong(hours, minutes, seconds, milliseconds);
     }
 }
