@@ -24,13 +24,13 @@ public class TickTokPhaseTracker {
             if (TickTokConfig.isEventTracingEnabled() && ModConstants.LOGGER.isTraceEnabled()) {
                 ModConstants.LOGGER.trace("TickTokPhaseTracker initialized phase {} for {}", current, levelKey.location());
             }
-            NeoForge.EVENT_BUS.post(new TickTokPhaseEvent.Start(current, clamped));
+            NeoForge.EVENT_BUS.post(new TickTokPhaseEvent.Start(current, clamped, levelKey));
             return;
         }
 
         if (last != current) {
-            NeoForge.EVENT_BUS.post(new TickTokPhaseEvent.End(last, clamped));
-            NeoForge.EVENT_BUS.post(new TickTokPhaseEvent.Start(current, clamped));
+            NeoForge.EVENT_BUS.post(new TickTokPhaseEvent.End(last, clamped, levelKey));
+            NeoForge.EVENT_BUS.post(new TickTokPhaseEvent.Start(current, clamped, levelKey));
             lastPhaseByLevel.put(levelKey, current);
             if (TickTokConfig.isEventTracingEnabled() && ModConstants.LOGGER.isTraceEnabled()) {
                 ModConstants.LOGGER.trace("TickTokPhaseTracker transitioned {} -> {} for {} at {}", last, current, levelKey.location(), clamped);

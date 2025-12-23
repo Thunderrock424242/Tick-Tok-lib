@@ -4,11 +4,9 @@ import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.thunder.ticktoklib.TickTokConfig;
 import com.thunder.ticktoklib.api.TickTokAPI;
-import com.thunder.ticktoklib.api.TickTokPhase;
 import com.thunder.ticktoklib.util.TickTokPhaseTracker;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -99,16 +97,14 @@ public class TickTok {
                 .then(Commands.literal("now")
                         .executes(ctx -> {
                             long dayTime = ctx.getSource().getLevel().getDayTime();
-                            TickTokPhase phase = TickTokAPI.currentPhase(dayTime);
-                            ctx.getSource().sendSuccess(() -> Component.literal(String.format("Day time: %d (%s)", dayTime, phase)), true);
+                            ctx.getSource().sendSuccess(() -> TickTokAPI.buildPhaseReport(dayTime), true);
                             return 1;
                         }))
                 .then(Commands.literal("convert")
                         .then(Commands.argument("ticks", LongArgumentType.longArg(0))
                                 .executes(ctx -> {
                                     long ticks = LongArgumentType.getLong(ctx, "ticks");
-                                    String formatted = TickTokAPI.formatHHMMSS(ticks);
-                                    ctx.getSource().sendSuccess(() -> Component.literal(String.format("%d ticks -> %s (%.2f seconds)", ticks, formatted, TickTokAPI.toSeconds((int) ticks))), false);
+                                    ctx.getSource().sendSuccess(() -> TickTokAPI.buildConversionReport(ticks), false);
                                     return 1;
                                 })));
 
