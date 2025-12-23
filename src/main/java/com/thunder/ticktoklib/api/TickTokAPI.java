@@ -6,17 +6,20 @@ import com.thunder.ticktoklib.TickTokConfig;
 import com.thunder.ticktoklib.TickTokFormatter;
 import com.thunder.ticktoklib.TickTokHelper;
 import com.thunder.ticktoklib.TickTokTimeBuilder;
+import com.thunder.ticktoklib.util.TickTokCountdown;
+import com.thunder.ticktoklib.util.TickTokPhaseScheduler;
+import com.thunder.ticktoklib.util.TickTokTimeUtils;
 
 import java.time.ZoneId;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-import com.thunder.ticktoklib.util.TickTokCountdown;
-
 /**
  * Public API façade for TickTokLib.
  */
 public class TickTokAPI {
+    private static final TickTokPhaseScheduler PHASE_SCHEDULER = new TickTokPhaseScheduler();
+
     private static void logDelegation(String methodName, String target, String details) {
         if (TickTokConfig.isDebugLoggingEnabled() && ModConstants.LOGGER.isDebugEnabled()) {
             ModConstants.LOGGER.debug("TickTokAPI.{} -> {} ({})", methodName, target, details);
@@ -109,6 +112,42 @@ public class TickTokAPI {
         return TickTokHelper.durationLong(hours, minutes, seconds, milliseconds);
     }
 
+    // ── Duration <-> ticks helpers using java.time ──────────────────
+    public static java.time.Duration ticksToDuration(long ticks) {
+        logDelegation("ticksToDuration", "TickTokTimeUtils.ticksToDuration", "ticks=" + ticks);
+        return TickTokTimeUtils.ticksToDuration(ticks);
+    }
+
+    public static java.time.Duration ticksToDuration(net.minecraft.world.level.Level level, long ticks) {
+        logDelegation("ticksToDuration(level)", "TickTokTimeUtils.ticksToDuration(Level, long)", "ticks=" + ticks + ", level=" + level.dimension().location());
+        return TickTokTimeUtils.ticksToDuration(level, ticks);
+    }
+
+    public static long durationToTicks(java.time.Duration duration) {
+        logDelegation("durationToTicks", "TickTokTimeUtils.durationToTicks", "duration=" + duration);
+        return TickTokTimeUtils.durationToTicks(duration);
+    }
+
+    public static long timeUnitToTicks(long time, java.util.concurrent.TimeUnit unit) {
+        logDelegation("timeUnitToTicks", "TickTokTimeUtils.timeUnitToTicks", time + " " + unit);
+        return TickTokTimeUtils.timeUnitToTicks(time, unit);
+    }
+
+    public static long ticksToTimeUnit(long ticks, java.util.concurrent.TimeUnit unit) {
+        logDelegation("ticksToTimeUnit", "TickTokTimeUtils.ticksToTimeUnit", "ticks=" + ticks + ", unit=" + unit);
+        return TickTokTimeUtils.ticksToTimeUnit(ticks, unit);
+    }
+
+    public static java.util.concurrent.CompletableFuture<Void> sleepTicksAsync(long ticks) {
+        logDelegation("sleepTicksAsync", "TickTokTimeUtils.sleepTicksAsync", "ticks=" + ticks);
+        return TickTokTimeUtils.sleepTicksAsync(ticks);
+    }
+
+    public static java.util.concurrent.CompletableFuture<Void> sleepTicksOnServer(net.minecraft.server.MinecraftServer server, long ticks, Runnable task) {
+        logDelegation("sleepTicksOnServer", "TickTokTimeUtils.sleepTicksOnServer", "ticks=" + ticks + ", server=" + server);
+        return TickTokTimeUtils.sleepTicksOnServer(server, ticks, task);
+    }
+
     // ── Conversion from ticks back to real‐world units ───────────────
 
     /** Convert ticks → seconds (may be fractional). */
@@ -186,6 +225,21 @@ public class TickTokAPI {
         return TickTokHelper.ticksSincePhaseStart(dayTime, phase);
     }
 
+    public static void scheduleAtPhase(TickTokPhase phase, Runnable task) {
+        logDelegation("scheduleAtPhase(any)", "TickTokPhaseScheduler.scheduleAtPhase", "phase=" + phase);
+        PHASE_SCHEDULER.scheduleAtPhase(phase, task);
+    }
+
+    public static void scheduleAtPhase(net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> level, TickTokPhase phase, Runnable task) {
+        logDelegation("scheduleAtPhase(level)", "TickTokPhaseScheduler.scheduleAtPhase", "phase=" + phase + ", level=" + level.location());
+        PHASE_SCHEDULER.scheduleAtPhase(level, phase, task);
+    }
+
+    public static TickTokPhaseScheduler.PhaseBarrier phaseBarrier(net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> level, TickTokPhase phase) {
+        logDelegation("phaseBarrier", "TickTokPhaseScheduler.barrier", "phase=" + phase + ", level=" + (level == null ? "any" : level.location()));
+        return PHASE_SCHEDULER.barrier(level, phase);
+    }
+
     // ── Countdown helpers ───────────────────────────────────────────
     public static TickTokCountdown countdown(long duration, long startTick) {
         logDelegation("countdown", "TickTokCountdown", "duration=" + duration + ", startTick=" + startTick);
@@ -200,5 +254,17 @@ public class TickTokAPI {
     public static TickTokCountdown countdown(long duration, long startTick, Consumer<TickTokCountdown> onComplete) {
         logDelegation("countdown(consumer)", "TickTokCountdown", "duration=" + duration + ", startTick=" + startTick);
         return new TickTokCountdown(duration, startTick, onComplete);
+    }
+
+    // ── Command-style formatting helpers ────────────────────────────
+    public static net.minecraft.network.chat.Component buildPhaseReport(long dayTime) {
+        TickTokPhase phase = currentPhase(dayTime);
+        return net.minecraft.network.chat.Component.literal(String.format("Day time: %d (%s)", dayTime, phase));
+    }
+
+    public static net.minecraft.network.chat.Component buildConversionReport(long ticks) {
+        String formatted = TickTokFormatter.formatHHMMSS(ticks);
+        float seconds = TickTokHelper.toSeconds((int) ticks);
+        return net.minecraft.network.chat.Component.literal(String.format("%d ticks -> %s (%.2f seconds)", ticks, formatted, seconds));
     }
 }
