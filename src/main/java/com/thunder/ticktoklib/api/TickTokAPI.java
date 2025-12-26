@@ -267,4 +267,9 @@ public class TickTokAPI {
         float seconds = TickTokHelper.toSeconds((int) ticks);
         return net.minecraft.network.chat.Component.literal(String.format("%d ticks -> %s (%.2f seconds)", ticks, formatted, seconds));
     }
+
+    public static net.minecraft.network.chat.Component buildLagBehindReport(long ticksBehind) {
+        logDelegation("buildLagBehindReport", "TickTokLagFormatter.buildLagBehindReport", "ticksBehind=" + ticksBehind);
+        return com.thunder.ticktoklib.TickTokLagFormatter.buildLagBehindReport(ticksBehind);
+    }
 }
