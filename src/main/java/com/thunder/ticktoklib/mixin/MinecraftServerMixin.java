@@ -13,7 +13,7 @@ public abstract class MinecraftServerMixin {
     private static final String BEHIND_PATTERN = "Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind";
 
     @Redirect(
-            method = "tickServer",
+            method = "runServer",
             at = @At(value = "INVOKE", target = "Lorg/slf4j/Logger;warn(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V")
     )
     private void ticktoklib$rewriteLagWarning(Logger logger, String pattern, Object millisBehindObj, Object ticksBehindObj) {
