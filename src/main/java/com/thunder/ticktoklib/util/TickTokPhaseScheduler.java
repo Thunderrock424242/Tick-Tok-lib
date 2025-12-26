@@ -82,6 +82,14 @@ public class TickTokPhaseScheduler {
             iterator.remove();
             runnable.run();
         }
+
+        if (tasks.isEmpty()) {
+            perPhase.remove(phase);
+
+            if (perPhase.isEmpty() && levelKey != null) {
+                scheduled.remove(levelKey);
+            }
+        }
     }
 
     private void scheduleAtPhaseInternal(ResourceKey<Level> levelKey, TickTokPhase phase, Runnable task) {
