@@ -8,10 +8,13 @@ import com.thunder.ticktoklib.TickTokHelper;
 import com.thunder.ticktoklib.TickTokTimeBuilder;
 import com.thunder.ticktoklib.util.TickTokCountdown;
 import com.thunder.ticktoklib.util.TickTokPhaseScheduler;
+import com.thunder.ticktoklib.util.TickTokTimerScheduler;
 import com.thunder.ticktoklib.util.TickTokTimeUtils;
 
 import java.time.ZoneId;
+import java.time.Duration;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
@@ -19,6 +22,7 @@ import java.util.function.Consumer;
  */
 public class TickTokAPI {
     private static final TickTokPhaseScheduler PHASE_SCHEDULER = new TickTokPhaseScheduler();
+    private static final TickTokTimerScheduler TIMER_SCHEDULER = TickTokTimerScheduler.getDefault();
 
     private static void logDelegation(String methodName, String target, String details) {
         if (TickTokConfig.isDebugLoggingEnabled() && ModConstants.LOGGER.isDebugEnabled()) {
@@ -146,6 +150,48 @@ public class TickTokAPI {
     public static java.util.concurrent.CompletableFuture<Void> sleepTicksOnServer(net.minecraft.server.MinecraftServer server, long ticks, Runnable task) {
         logDelegation("sleepTicksOnServer", "TickTokTimeUtils.sleepTicksOnServer", "ticks=" + ticks + ", server=" + server);
         return TickTokTimeUtils.sleepTicksOnServer(server, ticks, task);
+    }
+
+    // ── Timer helpers ───────────────────────────────────────────────
+    public static TickTokTimerScheduler.TimerHandle scheduleEveryTicks(long intervalTicks, Runnable task) {
+        logDelegation("scheduleEveryTicks(server)", "TickTokTimerScheduler.scheduleEvery", "intervalTicks=" + intervalTicks);
+        return TIMER_SCHEDULER.scheduleEvery(intervalTicks, task);
+    }
+
+    public static TickTokTimerScheduler.TimerHandle scheduleEveryTicks(net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> level,
+                                                                       long intervalTicks,
+                                                                       Runnable task) {
+        logDelegation("scheduleEveryTicks(level)", "TickTokTimerScheduler.scheduleEvery", "intervalTicks=" + intervalTicks + ", level=" + level.location());
+        return TIMER_SCHEDULER.scheduleEvery(level, intervalTicks, task);
+    }
+
+    public static TickTokTimerScheduler.TimerHandle scheduleEvery(Duration duration, Runnable task) {
+        long intervalTicks = TickTokTimeUtils.durationToTicks(duration);
+        logDelegation("scheduleEvery(duration)", "TickTokTimerScheduler.scheduleEvery", "duration=" + duration + ", intervalTicks=" + intervalTicks);
+        return TIMER_SCHEDULER.scheduleEvery(intervalTicks, task);
+    }
+
+    public static TickTokTimerScheduler.TimerHandle scheduleEvery(net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> level,
+                                                                  Duration duration,
+                                                                  Runnable task) {
+        long intervalTicks = TickTokTimeUtils.durationToTicks(duration);
+        logDelegation("scheduleEvery(level, duration)", "TickTokTimerScheduler.scheduleEvery", "duration=" + duration + ", intervalTicks=" + intervalTicks + ", level=" + level.location());
+        return TIMER_SCHEDULER.scheduleEvery(level, intervalTicks, task);
+    }
+
+    public static TickTokTimerScheduler.TimerHandle scheduleEvery(long time, TimeUnit unit, Runnable task) {
+        long intervalTicks = TickTokTimeUtils.timeUnitToTicks(time, unit);
+        logDelegation("scheduleEvery(timeUnit)", "TickTokTimerScheduler.scheduleEvery", "time=" + time + " " + unit + ", intervalTicks=" + intervalTicks);
+        return TIMER_SCHEDULER.scheduleEvery(intervalTicks, task);
+    }
+
+    public static TickTokTimerScheduler.TimerHandle scheduleEvery(net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> level,
+                                                                  long time,
+                                                                  TimeUnit unit,
+                                                                  Runnable task) {
+        long intervalTicks = TickTokTimeUtils.timeUnitToTicks(time, unit);
+        logDelegation("scheduleEvery(level, timeUnit)", "TickTokTimerScheduler.scheduleEvery", "time=" + time + " " + unit + ", intervalTicks=" + intervalTicks + ", level=" + level.location());
+        return TIMER_SCHEDULER.scheduleEvery(level, intervalTicks, task);
     }
 
     // ── Conversion from ticks back to real‐world units ───────────────
