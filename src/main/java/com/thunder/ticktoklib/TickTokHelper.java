@@ -2,6 +2,7 @@ package com.thunder.ticktoklib;
 
 import com.thunder.ticktoklib.Core.ModConstants;
 import com.thunder.ticktoklib.api.TickTokPhase;
+import com.thunder.ticktoklib.util.TickTokTimerScheduler;
 import com.thunder.ticktoklib.util.TickTokTimeRange;
 
 /**
@@ -150,6 +151,16 @@ public class TickTokHelper {
             ModConstants.LOGGER.debug("TickTokHelper.time() -> new TickTokTimeBuilder");
         }
         return new TickTokTimeBuilder();
+    }
+
+    /**
+     * Provides access to the default tick-based timer scheduler.
+     */
+    public static TickTokTimerScheduler timer() {
+        if (TickTokConfig.isDebugLoggingEnabled() && ModConstants.LOGGER.isDebugEnabled()) {
+            ModConstants.LOGGER.debug("TickTokHelper.timer() -> default TickTokTimerScheduler");
+        }
+        return TickTokTimerScheduler.getDefault();
     }
 
     /**
