@@ -78,7 +78,7 @@ public class TickTokHelper {
     }
 
     public static long toTicksMilliseconds(long milliseconds) {
-        long ticks = Math.round(milliseconds * (TICKS_PER_SECOND / 1000f));
+        long ticks = Math.round(milliseconds / (double) MS_PER_TICK);
         logConversion("toTicksMilliseconds", "milliseconds=" + milliseconds, ticks);
         return ticks;
     }

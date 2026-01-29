@@ -36,7 +36,7 @@ public class TickTokLagFormatter {
     }
 
     private static void logFormatting(String methodName, long ticks, String formatted) {
-        if (TickTokConfig.isConversionTracingEnabled() && ModConstants.LOGGER.isTraceEnabled()) {
+        if (TickTokConfig.isFormattingTracingEnabled() && ModConstants.LOGGER.isTraceEnabled()) {
             ModConstants.LOGGER.trace("TickTokLagFormatter.{}(ticks={}) -> {}", methodName, ticks, formatted);
         }
     }
