@@ -1,6 +1,7 @@
 package com.thunder.ticktoklib;
 
 import com.thunder.ticktoklib.Core.ModConstants;
+import com.thunder.ticktoklib.api.TickTokMoonPhase;
 import com.thunder.ticktoklib.api.TickTokPhase;
 import com.thunder.ticktoklib.util.TickTokTimerScheduler;
 import com.thunder.ticktoklib.util.TickTokTimeRange;
@@ -170,6 +171,19 @@ public class TickTokHelper {
         long clamped = Math.floorMod(dayTime, TickTokTimeRange.FULL_DAY);
         logConversion("clampToDay", "dayTime=" + dayTime, clamped);
         return clamped;
+    }
+
+    public static int moonPhaseIndex(long dayTime) {
+        long day = Math.floorDiv(dayTime, TickTokTimeRange.FULL_DAY);
+        int index = Math.floorMod(day, TickTokMoonPhase.values().length);
+        logConversion("moonPhaseIndex", "dayTime=" + dayTime, index);
+        return index;
+    }
+
+    public static TickTokMoonPhase resolveMoonPhase(long dayTime) {
+        TickTokMoonPhase phase = TickTokMoonPhase.fromIndex(moonPhaseIndex(dayTime));
+        logConversion("resolveMoonPhase", "dayTime=" + dayTime, phase);
+        return phase;
     }
 
     public static TickTokPhase resolvePhase(long dayTime) {
