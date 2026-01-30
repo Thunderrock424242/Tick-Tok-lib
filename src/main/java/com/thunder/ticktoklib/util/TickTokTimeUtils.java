@@ -25,6 +25,13 @@ public final class TickTokTimeUtils {
         return Duration.ofMillis(millis);
     }
 
+    /** Break down ticks into hour/minute/second/millisecond components. */
+    public static TickTokDurationBreakdown breakdownTicks(long ticks) {
+        TickTokDurationBreakdown breakdown = TickTokDurationBreakdown.fromTicks(ticks);
+        debug("breakdownTicks", "ticks=" + ticks + " -> " + breakdown.totalMilliseconds() + "ms");
+        return breakdown;
+    }
+
     /** Convert ticks to a {@link Duration}, retaining the level for future time-scaling hooks. */
     public static Duration ticksToDuration(Level level, long ticks) {
         Objects.requireNonNull(level, "level");
