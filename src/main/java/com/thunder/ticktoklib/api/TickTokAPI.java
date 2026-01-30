@@ -255,6 +255,27 @@ public class TickTokAPI {
         return TickTokFormatter.formatLocalized(ticks, pattern, locale, zoneId);
     }
 
+    // ── Moon phase helpers ───────────────────────────────────────────
+    public static int moonPhaseIndex(long dayTime) {
+        logDelegation("moonPhaseIndex", "TickTokHelper.moonPhaseIndex", "dayTime=" + dayTime);
+        return TickTokHelper.moonPhaseIndex(dayTime);
+    }
+
+    public static int moonPhaseIndex(net.minecraft.world.level.Level level) {
+        logDelegation("moonPhaseIndex(level)", "TickTokHelper.moonPhaseIndex", "level=" + level.dimension().location());
+        return TickTokHelper.moonPhaseIndex(level.getDayTime());
+    }
+
+    public static TickTokMoonPhase currentMoonPhase(long dayTime) {
+        logDelegation("currentMoonPhase", "TickTokHelper.resolveMoonPhase", "dayTime=" + dayTime);
+        return TickTokHelper.resolveMoonPhase(dayTime);
+    }
+
+    public static TickTokMoonPhase currentMoonPhase(net.minecraft.world.level.Level level) {
+        logDelegation("currentMoonPhase(level)", "TickTokHelper.resolveMoonPhase", "level=" + level.dimension().location());
+        return TickTokHelper.resolveMoonPhase(level.getDayTime());
+    }
+
     // ── Phase helpers ────────────────────────────────────────────────
     public static TickTokPhase currentPhase(long dayTime) {
         logDelegation("currentPhase", "TickTokHelper.resolvePhase", "dayTime=" + dayTime);
