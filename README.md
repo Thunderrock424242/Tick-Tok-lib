@@ -65,3 +65,33 @@ public abstract class WaterFluidMixin {
     }
 }
 ```
+
+Duration Formatting
+------------------
+TickTok now includes helpers for turning tick durations into short or long
+human-friendly strings:
+
+```java
+String compact = TickTokFormatter.formatDurationShort(1250); // "1m 2s 500ms"
+String verbose = TickTokFormatter.formatDurationLong(1250);  // "1 minute 2 seconds 500 milliseconds"
+```
+
+Need the raw breakdown instead? You can also pull a structured breakdown of ticks:
+
+```java
+TickTokDurationBreakdown breakdown = TickTokTimeUtils.breakdownTicks(1250);
+long seconds = breakdown.seconds();
+```
+
+Cooldown Utility
+---------------
+Need a simple reusable cooldown timer? The `TickTokCooldown` helper tracks a
+duration window and can format the remaining time:
+
+```java
+TickTokCooldown cooldown = new TickTokCooldown(200, level.getGameTime());
+if (cooldown.isReady(level.getGameTime())) {
+    cooldown.reset(level.getGameTime());
+}
+String remaining = cooldown.formatRemainingShort(level.getGameTime());
+```

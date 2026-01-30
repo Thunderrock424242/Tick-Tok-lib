@@ -1,13 +1,12 @@
 package com.thunder.ticktoklib;
 
 import com.thunder.ticktoklib.Core.ModConstants;
+import com.thunder.ticktoklib.util.TickTokDurationBreakdown;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-
-import static com.thunder.ticktoklib.TickTokHelper.MS_PER_TICK;
 
 public class TickTokFormatter {
 
@@ -73,5 +72,57 @@ public class TickTokFormatter {
             pattern += ".SSS";
         }
         return formatLocalized(ticks, pattern, locale, ZoneId.systemDefault());
+    }
+
+    /**
+     * Format a tick duration as a short label (ex: "1h 2m 3s 450ms").
+     */
+    public static String formatDurationShort(long ticks) {
+        String formatted = formatDuration(ticks, true);
+        logFormatting("formatDurationShort", ticks, formatted);
+        return formatted;
+    }
+
+    /**
+     * Format a tick duration as a long label (ex: "1 hour 2 minutes 3 seconds 450 milliseconds").
+     */
+    public static String formatDurationLong(long ticks) {
+        String formatted = formatDuration(ticks, false);
+        logFormatting("formatDurationLong", ticks, formatted);
+        return formatted;
+    }
+
+    private static String formatDuration(long ticks, boolean shortUnits) {
+        TickTokDurationBreakdown breakdown = TickTokDurationBreakdown.fromTicks(ticks);
+        long hours = breakdown.hours();
+        long minutes = breakdown.minutes();
+        long seconds = breakdown.seconds();
+        long millis = breakdown.milliseconds();
+
+        StringBuilder builder = new StringBuilder();
+        appendDurationUnit(builder, hours, shortUnits ? "h" : "hour", shortUnits);
+        appendDurationUnit(builder, minutes, shortUnits ? "m" : "minute", shortUnits);
+        appendDurationUnit(builder, seconds, shortUnits ? "s" : "second", shortUnits);
+        if (millis > 0 || builder.length() == 0) {
+            appendDurationUnit(builder, millis, shortUnits ? "ms" : "millisecond", shortUnits);
+        }
+        return builder.toString();
+    }
+
+    private static void appendDurationUnit(StringBuilder builder, long value, String unit, boolean shortUnits) {
+        if (value == 0) {
+            return;
+        }
+        if (builder.length() > 0) {
+            builder.append(' ');
+        }
+        if (shortUnits) {
+            builder.append(value).append(unit);
+            return;
+        }
+        builder.append(value).append(' ').append(unit);
+        if (value != 1) {
+            builder.append('s');
+        }
     }
 }
