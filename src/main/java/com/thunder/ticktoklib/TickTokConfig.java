@@ -16,6 +16,7 @@ public class TickTokConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_TRACE_CONVERSIONS;
     public static final ModConfigSpec.BooleanValue ENABLE_TRACE_FORMATTING;
     public static final ModConfigSpec.BooleanValue ENABLE_TRACE_EVENTS;
+    public static final ModConfigSpec.BooleanValue ENABLE_OVERLOAD_DIAGNOSTICS;
 
     static {
         BUILDER.push("Tick Time Display Options");
@@ -55,6 +56,10 @@ public class TickTokConfig {
         ENABLE_TRACE_EVENTS = BUILDER
                 .comment("Emit TRACE logs for time-of-day phase events")
                 .define("enable_trace_events", false);
+
+        ENABLE_OVERLOAD_DIAGNOSTICS = BUILDER
+                .comment("Append suspected cause hints to server overload warnings")
+                .define("enable_overload_diagnostics", true);
 
         BUILDER.pop();
         SPEC = BUILDER.build();
@@ -97,6 +102,10 @@ public class TickTokConfig {
 
     public static boolean isEventTracingEnabled() {
         return safeGet(ENABLE_TRACE_EVENTS, false);
+    }
+
+    public static boolean isOverloadDiagnosticsEnabled() {
+        return safeGet(ENABLE_OVERLOAD_DIAGNOSTICS, true);
     }
 
     public static boolean showGameTime() {
