@@ -95,3 +95,14 @@ if (cooldown.isReady(level.getGameTime())) {
 }
 String remaining = cooldown.formatRemainingShort(level.getGameTime());
 ```
+
+Overload Diagnostics
+--------------------
+When Minecraft logs the "Can't keep up" warning, TickTok now appends a quick
+cause hint and, when detectable, a list of likely involved mod IDs.
+
+You can turn this off in config with:
+
+```toml
+enable_overload_diagnostics = true
+```

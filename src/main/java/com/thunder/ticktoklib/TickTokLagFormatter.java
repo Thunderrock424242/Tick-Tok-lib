@@ -1,6 +1,7 @@
 package com.thunder.ticktoklib;
 
 import com.thunder.ticktoklib.Core.ModConstants;
+import com.thunder.ticktoklib.util.TickTokOverloadDiagnostics;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -19,6 +20,11 @@ public class TickTokLagFormatter {
                 seconds,
                 millisecondsBehind
         );
+
+        if (TickTokConfig.isOverloadDiagnosticsEnabled()) {
+            formatted += " | " + TickTokOverloadDiagnostics.buildCauseHint(ticksBehind, millisecondsBehind);
+        }
+
         logFormatting("formatLagBehind", ticksBehind, formatted);
         return formatted;
     }
