@@ -70,9 +70,13 @@ public class TickTokTimerScheduler {
         lastLevelTick.put(levelKey, currentTick);
         List<TimerTask> tasks = levelTasks.get(levelKey);
         if (tasks == null || tasks.isEmpty()) {
+            levelTasks.remove(levelKey, tasks);
             return;
         }
         tickTasks(tasks, currentTick, levelKey);
+        if (tasks.isEmpty()) {
+            levelTasks.remove(levelKey, tasks);
+        }
     }
 
     private TimerHandle scheduleEveryInternal(ResourceKey<Level> levelKey, long intervalTicks, Runnable task) {
@@ -116,7 +120,11 @@ public class TickTokTimerScheduler {
     }
 
     private void runTask(TimerTask task, long currentTick, ResourceKey<Level> levelKey) {
-        task.task.run();
+        try {
+            task.task.run();
+        } catch (Throwable throwable) {
+            ModConstants.LOGGER.error("TickTokTimerScheduler task failed for {}", levelKey == null ? "server" : levelKey.location(), throwable);
+        }
         long nextTick = task.nextTick;
         while (nextTick <= currentTick) {
             nextTick += task.intervalTicks;
