@@ -12,7 +12,6 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
@@ -87,7 +86,7 @@ public class TickTokTimerScheduler {
 
         long baseTick = levelKey == null
                 ? serverTickCounter.get()
-                : Optional.ofNullable(lastLevelTick.get(levelKey)).orElse(0L);
+                : lastLevelTick.getOrDefault(levelKey, 0L);
         long nextTick = baseTick + intervalTicks;
 
         TimerTask timerTask = new TimerTask(intervalTicks, nextTick, task);
@@ -108,14 +107,18 @@ public class TickTokTimerScheduler {
     }
 
     private void tickTasks(List<TimerTask> tasks, long currentTick, ResourceKey<Level> levelKey) {
+        boolean hasCancelled = false;
         for (TimerTask task : tasks) {
             if (task.isCancelled()) {
-                tasks.remove(task);
+                hasCancelled = true;
                 continue;
             }
             if (currentTick >= task.nextTick) {
                 runTask(task, currentTick, levelKey);
             }
+        }
+        if (hasCancelled) {
+            tasks.removeIf(TimerTask::isCancelled);
         }
     }
 
@@ -126,8 +129,10 @@ public class TickTokTimerScheduler {
             ModConstants.LOGGER.error("TickTokTimerScheduler task failed for {}", levelKey == null ? "server" : levelKey.location(), throwable);
         }
         long nextTick = task.nextTick;
-        while (nextTick <= currentTick) {
-            nextTick += task.intervalTicks;
+        if (nextTick <= currentTick) {
+            long interval = task.intervalTicks;
+            long missedIntervals = ((currentTick - nextTick) / interval) + 1;
+            nextTick += missedIntervals * interval;
         }
         task.nextTick = nextTick;
 

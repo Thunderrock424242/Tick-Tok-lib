@@ -26,7 +26,6 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 public class TickTok {
 
-    private static final int TICK_OPTIMIZATION_INTERVAL = 20;
 
     private final TickTokPhaseTracker phaseTracker = new TickTokPhaseTracker();
 
@@ -118,13 +117,6 @@ public class TickTok {
     @SubscribeEvent
     public void onLevelTick(LevelTickEvent.Post event) {
         long dayTime = event.getLevel().getDayTime();
-
-        if (TickTokConfig.isTickOptimizationEnabled()) {
-            if (Math.floorMod(dayTime, TICK_OPTIMIZATION_INTERVAL) != 0) {
-                return;
-            }
-        }
-
         phaseTracker.handle(dayTime, event.getLevel().dimension());
     }
 }
