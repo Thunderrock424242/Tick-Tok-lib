@@ -1,11 +1,11 @@
 package com.thunder.ticktoklib;
 
-import com.thunder.ticktoklib.Core.ModConstants;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.function.Supplier;
 
 public class TickTokConfig {
+
     public static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
     public static final ModConfigSpec SPEC;
 
@@ -62,28 +62,52 @@ public class TickTokConfig {
                 .define("enable_overload_diagnostics", true);
 
         BUILDER.pop();
+
         SPEC = BUILDER.build();
     }
 
+    /**
+     * Returns whether TickTok's tick optimization is enabled.
+     * <p>
+     * During early NeoForge startup the config may be registered but not yet
+     * fully loaded. In that case the safe default is returned.
+     */
     public static boolean isTickOptimizationEnabled() {
         return safeGet(ENABLE_TICK_OPTIMIZATION, false);
     }
 
-    private static <T> T safeGet(ModConfigSpec.ConfigValue<T> configValue, Supplier<T> fallbackSupplier) {
+    /**
+     * Safely reads a generic config value.
+     * <p>
+     * NeoForge can legitimately throw IllegalStateException when a value is
+     * accessed before its config has finished loading. This is an expected
+     * lifecycle state, so TickTok uses the supplied fallback without logging
+     * a warning.
+     */
+    private static <T> T safeGet(
+            ModConfigSpec.ConfigValue<T> configValue,
+            Supplier<T> fallbackSupplier
+    ) {
         try {
             return configValue.get();
         } catch (IllegalStateException exception) {
-            T fallback = fallbackSupplier.get();
-            ModConstants.LOGGER.warn("Config {} unavailable, using fallback {}", configValue.getPath(), fallback);
-            return fallback;
+            return fallbackSupplier.get();
         }
     }
 
-    private static boolean safeGet(ModConfigSpec.BooleanValue configValue, boolean fallback) {
+    /**
+     * Safely reads a boolean config value.
+     * <p>
+     * If NeoForge has not finished loading the config yet, return the supplied
+     * fallback instead of producing misleading startup warning spam.
+     */
+    private static boolean safeGet(
+            ModConfigSpec.BooleanValue configValue,
+            boolean fallback
+    ) {
         try {
             return configValue.get();
         } catch (IllegalStateException exception) {
-            ModConstants.LOGGER.warn("Config {} unavailable, using fallback {}", configValue.getPath(), fallback);
             return fallback;
         }
     }
@@ -115,5 +139,4 @@ public class TickTokConfig {
     public static boolean showLocalTime() {
         return safeGet(SHOW_LOCAL_TIME, true);
     }
-
 }

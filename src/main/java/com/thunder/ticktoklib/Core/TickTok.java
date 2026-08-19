@@ -20,103 +20,172 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 /**
- * Main mod class for Tick Time Lib.
+ * Main mod class for Tick Tok Lib.
  */
 @Mod(ModConstants.MOD_ID)
-
 public class TickTok {
-
 
     private final TickTokPhaseTracker phaseTracker = new TickTokPhaseTracker();
 
     /**
-     * Instantiates a new Wilderness odyssey api main mod class.
+     * Initializes Tick Tok Lib.
      *
      * @param modEventBus the mod event bus
-     * @param container   the container
+     * @param container   the mod container
      */
     public TickTok(IEventBus modEventBus, ModContainer container) {
 
+        /*
+         * Register the config before any TickTok systems attempt to read it.
+         *
+         * This prevents early lifecycle accesses from querying an unregistered
+         * ModConfigSpec and producing "Config unavailable" warnings.
+         */
+        container.registerConfig(ModConfig.Type.COMMON, TickTokConfig.SPEC);
+
         ModConstants.LOGGER.info("Initializing TickTok core module");
 
-        // Register mod setup and creative tabs
+        // Register mod lifecycle listeners.
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::addCreative);
 
-        if (TickTokConfig.isDebugLoggingEnabled() && ModConstants.LOGGER.isDebugEnabled()) {
-            ModConstants.LOGGER.debug("TickTok constructor - registered listeners for FMLCommonSetupEvent and BuildCreativeModeTabContentsEvent");
+        /*
+         * Do not query TickTokConfig here.
+         *
+         * The config has been registered, but NeoForge may not have finished
+         * loading its actual values yet during the mod constructor.
+         *
+         * Normal Log4j debug logging is safe here because it does not depend
+         * on TickTok's config lifecycle.
+         */
+        if (ModConstants.LOGGER.isDebugEnabled()) {
+            ModConstants.LOGGER.debug(
+                    "TickTok constructor - registered listeners for FMLCommonSetupEvent and BuildCreativeModeTabContentsEvent"
+            );
         }
 
-        // Register global events
+        // Register NeoForge gameplay/server events.
         NeoForge.EVENT_BUS.register(this);
 
-        if (TickTokConfig.isDebugLoggingEnabled() && ModConstants.LOGGER.isDebugEnabled()) {
-            ModConstants.LOGGER.debug("TickTok constructor - subscribed to NeoForge.EVENT_BUS with {}", this.getClass().getSimpleName());
+        if (ModConstants.LOGGER.isDebugEnabled()) {
+            ModConstants.LOGGER.debug(
+                    "TickTok constructor - subscribed to NeoForge.EVENT_BUS with {}",
+                    this.getClass().getSimpleName()
+            );
+
+            ModConstants.LOGGER.debug(
+                    "TickTok constructor - registered TickTokConfig.SPEC with ModConfig"
+            );
         }
-
-        container.registerConfig(ModConfig.Type.COMMON, TickTokConfig.SPEC);
-
-        if (TickTokConfig.isDebugLoggingEnabled() && ModConstants.LOGGER.isDebugEnabled()) {
-            ModConstants.LOGGER.debug("TickTok constructor - registered TickTokConfig.SPEC with ModConfig");
-        }
-
-
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> ModConstants.LOGGER.info("Tick Tok Lib setup complete via FMLCommonSetupEvent"));
+        event.enqueueWork(() ->
+                ModConstants.LOGGER.info(
+                        "Tick Tok Lib setup complete via FMLCommonSetupEvent"
+                )
+        );
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-
-
+        // Reserved for future creative tab registration.
     }
 
     /**
-     * On server starting.
+     * Called when the server starts.
      *
-     * @param event the event
+     * @param event server starting event
      */
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
-        if (TickTokConfig.isDebugLoggingEnabled() && ModConstants.LOGGER.isDebugEnabled()) {
-            ModConstants.LOGGER.debug("TickTok.onServerStarting triggered for server {}", event.getServer().getServerVersion());
+
+        /*
+         * Check the logger first.
+         *
+         * Because Java short-circuits && from left to right, TickTokConfig
+         * will not be queried at all unless debug logging is actually enabled.
+         */
+        if (ModConstants.LOGGER.isDebugEnabled()
+                && TickTokConfig.isDebugLoggingEnabled()) {
+
+            ModConstants.LOGGER.debug(
+                    "TickTok.onServerStarting triggered for server {}",
+                    event.getServer().getServerVersion()
+            );
         }
     }
 
     /**
-     * On register commands.
+     * Registers TickTok commands.
      *
-     * @param event the event
+     * @param event command registration event
      */
     @SubscribeEvent
     public void onRegisterCommands(RegisterCommandsEvent event) {
-        LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("ticktok")
-                .requires(source -> source.hasPermission(2))
-                .then(Commands.literal("now")
-                        .executes(ctx -> {
-                            long dayTime = ctx.getSource().getLevel().getDayTime();
-                            ctx.getSource().sendSuccess(() -> TickTokAPI.buildPhaseReport(dayTime), true);
-                            return 1;
-                        }))
-                .then(Commands.literal("convert")
-                        .then(Commands.argument("ticks", LongArgumentType.longArg(0))
+
+        LiteralArgumentBuilder<CommandSourceStack> builder =
+                Commands.literal("ticktok")
+                        .requires(source -> source.hasPermission(2))
+
+                        .then(Commands.literal("now")
                                 .executes(ctx -> {
-                                    long ticks = LongArgumentType.getLong(ctx, "ticks");
-                                    ctx.getSource().sendSuccess(() -> TickTokAPI.buildConversionReport(ticks), false);
+
+                                    long dayTime =
+                                            ctx.getSource()
+                                                    .getLevel()
+                                                    .getDayTime();
+
+                                    ctx.getSource().sendSuccess(
+                                            () -> TickTokAPI.buildPhaseReport(dayTime),
+                                            true
+                                    );
+
                                     return 1;
-                                })));
+                                }))
+
+                        .then(Commands.literal("convert")
+                                .then(Commands.argument(
+                                                "ticks",
+                                                LongArgumentType.longArg(0)
+                                        )
+                                        .executes(ctx -> {
+
+                                            long ticks =
+                                                    LongArgumentType.getLong(
+                                                            ctx,
+                                                            "ticks"
+                                                    );
+
+                                            ctx.getSource().sendSuccess(
+                                                    () -> TickTokAPI.buildConversionReport(ticks),
+                                                    false
+                                            );
+
+                                            return 1;
+                                        })));
 
         event.getDispatcher().register(builder);
 
         if (ModConstants.LOGGER.isTraceEnabled()) {
-            ModConstants.LOGGER.trace("TickTok.onRegisterCommands registered /ticktok helpers");
+            ModConstants.LOGGER.trace(
+                    "TickTok.onRegisterCommands registered /ticktok helpers"
+            );
         }
     }
 
+    /**
+     * Handles TickTok's per-level tick tracking.
+     *
+     * @param event level tick event
+     */
     @SubscribeEvent
     public void onLevelTick(LevelTickEvent.Post event) {
+
         long dayTime = event.getLevel().getDayTime();
-        phaseTracker.handle(dayTime, event.getLevel().dimension());
+
+        phaseTracker.handle(
+                dayTime,
+                event.getLevel().dimension()
+        );
     }
 }
