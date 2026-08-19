@@ -106,3 +106,10 @@ You can turn this off in config with:
 ```toml
 enable_overload_diagnostics = true
 ```
+
+Library/API Roadmap Ideas
+-------------------------
+If you are planning next features, see [`API_WISHLIST.md`](API_WISHLIST.md) for
+recommended additions focused on NeoForge mod ergonomics, scheduling safety,
+and persistence support.
+
